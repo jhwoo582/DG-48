@@ -1,0 +1,17 @@
+{
+  "name": "sampler-ex",
+  "private": true,
+  "version": "0.1.0",
+  "description": "A pocket-style sampler and step sequencer that runs in the browser.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2",
+    "vite": "^8.3.6"
+  }
+}

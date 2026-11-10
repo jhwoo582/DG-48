@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>SMPL-12</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..800&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="app" class="device">
+      <header class="bar">
+        <div class="logo" aria-label="SMPL-12">smpl<span>12</span></div>
+        <div class="transport">
+          <button id="play" class="tbtn" title="Play / stop (Space)" aria-label="Play">▶</button>
+          <button id="seqrec" class="tbtn rec" title="Record pads into the pattern while playing (R)" aria-label="Record">●</button>
+          <button id="songmode" class="toggle" title="Play the song chain instead of looping one pattern (N)">Song</button>
+          <span class="divider"></span>
+          <label class="num" title="Scroll over the number to nudge">Tempo <input id="bpm" type="number" min="40" max="300" step="1" /></label>
+          <button id="tap" class="btn" title="Tap along to set the tempo (T)">Tap</button>
+          <div id="swing-f" class="tfader"></div>
+          <button id="metro" class="toggle" title="Metronome (M)">Click</button>
+        </div>
+        <div class="bar-right">
+          <div id="master-f" class="tfader"></div>
+          <button id="lib-btn" class="btn" title="Browse sounds and add them to pads (L)">Library</button>
+          <button id="help-btn" class="btn" title="Keyboard and trackpad shortcuts (?)">Keys</button>
+        </div>
+      </header>
+
+      <main class="deck">
+        <section class="zone pads-zone" aria-label="Pads">
+          <div class="groups" id="groups"></div>
+          <div class="pads" id="pads"></div>
+          <div class="padbar">
+            <button id="keys" class="toggle" title="Play the selected sound chromatically across the pads (K)">Keys mode</button>
+            <button id="kit-restore" class="btn" title="Put this group's built-in sounds back. Patterns stay.">Reset kit</button>
+          </div>
+          <div id="gvol-f" class="tfader"></div>
+        </section>
+
+        <section class="zone edit-zone" id="editor" aria-label="Sound editor">
+          <div class="screen">
+            <div class="screen-head">
+              <span id="ed-title"></span>
+              <input id="ed-name" maxlength="16" placeholder="Name" spellcheck="false" aria-label="Sound name" />
+            </div>
+            <canvas id="wave" title="Drag the markers to trim. Double-click to reset."></canvas>
+            <div class="screen-foot">
+              <span id="wave-info"></span>
+              <span id="time-info"></span>
+            </div>
+          </div>
+
+          <div class="params" id="params"></div>
+
+          <div class="row">
+            <div id="len-f" class="tfader flex" title="Cut the sound after a note length at the current tempo"></div>
+            <button id="len-all" class="btn" title="Give every pad in this group the same length">Same for all pads</button>
+          </div>
+
+          <div class="row">
+            <div class="seg" id="mode">
+              <button data-v="oneshot" title="Plays to the end. Hitting again restarts it.">One-shot</button>
+              <button data-v="key" title="Plays while held. Notes can overlap.">Gate</button>
+            </div>
+            <button id="reverse" class="toggle">Reverse</button>
+            <label class="sel">Choke
+              <select id="choke" title="Sounds in the same choke group cut each other off">
+                <option value="0">Off</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="sync">
+            <div class="row">
+              <span class="lbl">Tempo sync</span>
+              <div class="seg" id="time-mode">
+                <button data-v="off" title="Play at the original speed">Off</button>
+                <button data-v="bpm" title="Stretch from the sample's tempo to the project tempo">BPM</button>
+                <button data-v="bars" title="Fit the trimmed region to a number of bars">Bars</button>
+              </div>
+              <div class="seg" id="stretch-mode">
+                <button data-v="stretch" title="Change length, keep pitch">Keep pitch</button>
+                <button data-v="repitch" title="Like tape: faster is higher">Repitch</button>
+              </div>
+            </div>
+            <div class="row" id="time-bpm">
+              <div id="sbpm-f" class="tfader flex"></div>
+              <button id="bpm-auto" class="btn" title="Guess the tempo from the trimmed length">Detect</button>
+              <button id="bpm-half" class="btn" aria-label="Halve">½</button>
+              <button id="bpm-double" class="btn" aria-label="Double">×2</button>
+            </div>
+            <div class="row" id="time-bars">
+              <span class="lbl">Length</span>
+              <div class="seg" id="bars-seg"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="zone side-zone">
+          <div class="block" id="ytblock">
+            <div class="block-head">
+              <h2>YouTube</h2>
+              <button id="cue-mode" class="toggle small" title="Turn the pads into cue points in this video (Y)">Cue pads</button>
+            </div>
+            <input id="yt-url" class="text" placeholder="Paste a YouTube link" spellcheck="false" aria-label="YouTube link" />
+            <div class="yt-frame" id="yt-frame">
+              <div class="yt-empty">Paste a YouTube or YouTube Music link above.</div>
+            </div>
+            <div class="row yt-ctrl">
+              <button id="yt-back" class="btn">−5 s</button>
+              <button id="yt-play" class="btn">Play / pause</button>
+              <button id="yt-fwd" class="btn">+5 s</button>
+              <span id="yt-time" class="dim"></span>
+            </div>
+            <div class="row cue-row" id="cue-row">
+              <button id="cue-spread" class="btn" title="Spread 12 cues evenly across the video">Spread 12</button>
+              <button id="cue-clear" class="btn danger">Clear cues</button>
+              <button id="yt-open" class="btn" title="Open this moment on youtube.com, then record it with Another tab">Open on YouTube</button>
+            </div>
+            <p class="cue-help dim" id="cue-help">Empty pad stores the current moment. Hold a pad to play from its cue. Shift + pad moves it.</p>
+          </div>
+
+          <div class="block" id="sampler">
+            <div class="block-head">
+              <h2>Sample</h2>
+              <select id="src-kind" aria-label="Sample source">
+                <option value="display">Another tab</option>
+                <option value="device">Mic or interface</option>
+                <option value="resample">This sampler</option>
+              </select>
+            </div>
+
+            <div class="row src-row" id="src-row">
+              <select id="device" aria-label="Input device"></select>
+              <span id="src-hint" class="dim"></span>
+              <button id="connect" class="btn connect">Connect</button>
+            </div>
+
+            <button id="hold" class="hold" title="Hold to record. Tap to keep the last 4 seconds. (G)">
+              <span class="hold-meter" id="meter-bar"></span>
+              <span class="hold-main" id="hold-main">Hold to sample</span>
+              <span class="hold-sub" id="hold-sub"></span>
+            </button>
+
+            <details class="more">
+              <summary>Long takes, options and files</summary>
+              <div class="more-body">
+                <div class="row">
+                  <span class="lbl" title="While connected, the last 60 seconds are kept">Keep the last</span>
+                  <div class="seg" id="grab"></div>
+                  <span id="buf-info" class="dim"></span>
+                </div>
+                <div class="row">
+                  <button id="sample-rec" class="btn rec-btn">Record</button>
+                  <span id="rec-time" class="dim"></span>
+                </div>
+                <div class="row opts">
+                  <label><input type="checkbox" id="opt-trim" checked /> Trim silence</label>
+                  <label><input type="checkbox" id="opt-norm" checked /> Normalize</label>
+                  <label><input type="checkbox" id="opt-next" checked /> Move to next pad</label>
+                  <label><input type="checkbox" id="opt-mon" /> Monitor input</label>
+                </div>
+                <div class="row">
+                  <label class="btn file">Load files<input type="file" id="file" accept="audio/*" multiple hidden /></label>
+                  <span class="joined">
+                    <select id="chop-mode" aria-label="Chop mode">
+                      <option value="hits">At hits</option>
+                      <option value="even">Even</option>
+                    </select>
+                    <select id="chop-n" aria-label="Slices">
+                      <option value="2">2</option>
+                      <option value="4">4</option>
+                      <option value="8" selected>8</option>
+                      <option value="12">12</option>
+                    </select>
+                    <button id="chop" class="btn" title="Slice the trimmed region onto the next pads, at each hit or evenly">Chop</button>
+                  </span>
+                  <button id="export" class="btn">Export WAV</button>
+                  <button id="clear" class="btn danger">Clear pad</button>
+                </div>
+              </div>
+            </details>
+            <span id="src-status" hidden></span>
+          </div>
+
+        </section>
+      </main>
+
+      <section class="fx-zone" id="fx" aria-label="Effects">
+        <div class="fx-col">
+          <div class="block-head">
+            <h2>Effects</h2>
+            <button id="xy-snap" class="toggle small" title="Jump back to the previous values when you let go">Snap back</button>
+          </div>
+          <div class="seg wide" id="fx-type"></div>
+          <div id="xy-wrap"></div>
+        </div>
+        <div class="fx-col">
+          <h3>Send</h3>
+          <div class="params" id="fx-params"></div>
+          <h3>Master bus</h3>
+          <div class="params two" id="master-params"></div>
+        </div>
+        <div class="fx-col">
+          <h3>Punch-in <span class="dim">while held</span></h3>
+          <div class="punch" id="punch"></div>
+        </div>
+      </section>
+
+      <section class="zone seq-zone" aria-label="Sequencer">
+        <div class="seq-head">
+          <h2>Pattern <b id="seq-pattern">1</b> <span class="dim">editing group</span> <b id="seq-group">A</b></h2>
+          <div class="row tight">
+            <button id="pat-copy" class="btn" title="Copy all four groups of this pattern">Copy pattern</button>
+            <button id="pat-paste" class="btn">Paste</button>
+            <button id="seq-clear" class="btn danger" title="Clear only the group you are editing">Clear A</button>
+          </div>
+        </div>
+        <div class="patterns" id="patterns" title="A pattern holds all four groups. While playing, the switch happens when the current pattern ends. [ and ]"></div>
+        <div class="row seq-bar">
+          <label class="sel">Length
+            <select id="pat-len">
+              <option value="1">1 bar</option>
+              <option value="2">2 bars</option>
+              <option value="3">3 bars</option>
+              <option value="4">4 bars</option>
+            </select>
+          </label>
+          <span class="lbl">Bar</span>
+          <span class="seg" id="pages"></span>
+          <button id="follow" class="toggle on" title="Turn the bar page with the playhead">Follow</button>
+        </div>
+        <div class="grid" id="grid"></div>
+
+        <div class="arrange">
+          <div class="seq-head">
+            <h2>Song <span id="song-info" class="dim"></span></h2>
+            <div class="row tight">
+              <button id="song-loop" class="toggle">Loop</button>
+              <button id="song-add" class="btn" title="Add the current pattern to the end of the song">Add pattern</button>
+              <button id="song-clear" class="btn danger">Clear</button>
+            </div>
+          </div>
+          <div class="song" id="song"></div>
+        </div>
+      </section>
+    </div>
+
+    <aside id="library" class="library" aria-label="Sound library"></aside>
+
+    <dialog id="help" class="help">
+      <h2>Shortcuts</h2>
+      <dl>
+        <dt>1 2 3 / Q W E / A S D / Z X C</dt><dd>Pads</dd>
+        <dt>Space</dt><dd>Play / stop</dd>
+        <dt>G (hold)</dt><dd>Sample while held, tap for the last 4 s</dd>
+        <dt>↑ ↓</dt><dd>Group</dd>
+        <dt>[ ]</dt><dd>Pattern</dd>
+        <dt>R</dt><dd>Record into pattern</dd>
+        <dt>N</dt><dd>Song mode</dd>
+        <dt>K</dt><dd>Keys mode</dd>
+        <dt>T</dt><dd>Tap tempo</dd>
+        <dt>M</dt><dd>Metronome</dd>
+        <dt>L</dt><dd>Sound library</dd>
+        <dt>Y</dt><dd>YouTube cue pads</dd>
+        <dt>⌘Z  ⇧⌘Z</dt><dd>Undo, redo</dd>
+        <dt>7 8 9 0 − =</dt><dd>Punch-in effects</dd>
+      </dl>
+      <h2>Trackpad</h2>
+      <dl>
+        <dt>Two-finger swipe on a slider</dt><dd>Change the value, Shift for fine</dd>
+        <dt>Swipe on a pad</dt><dd>Up and down for volume, sideways for FX send</dd>
+        <dt>Swipe on A–D</dt><dd>Group volume</dd>
+        <dt>Swipe on the XY pad</dt><dd>Move both effect controls</dd>
+        <dt>Double-click</dt><dd>Reset</dd>
+      </dl>
+      <label class="inv"><input type="checkbox" id="wheel-inv" /> Reverse swipe direction</label>
+      <form method="dialog"><button class="btn">Close</button></form>
+    </dialog>
+
+    <div id="overlay">
+      <button>Turn on audio</button>
+      <p>Browsers keep audio off until you click once.</p>
+    </div>
+    <div id="toast" role="status"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
