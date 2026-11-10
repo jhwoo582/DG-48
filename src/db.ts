@@ -1,7 +1,7 @@
 import type { Project } from './types';
 
 /** IndexedDB: 샘플 PCM 원본과 프로젝트 JSON을 브라우저에 저장 */
-const DB_NAME = 'sampler-ex';
+const DB_NAME = 'sampler-ex'; // 이름을 바꾸면 기존에 저장된 프로젝트·샘플을 못 읽으므로 유지
 const DB_VERSION = 1;
 
 export interface StoredSample {

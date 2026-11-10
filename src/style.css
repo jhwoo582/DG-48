@@ -1,5 +1,5 @@
 /*
- * SMPL-12 — 밝은 알루미늄 본체 + 어두운 "화면" 두 개(파형, XY).
+ * DG-48 Digger — 밝은 알루미늄 본체 + 어두운 "화면" 두 개(파형, XY).
  * 색은 역할로만 쓴다: 코발트 = 선택/켜짐, 빨강 = 녹음/재생 위치.
  */
 :root {
@@ -103,7 +103,9 @@ h3 {
 }
 .logo span {
   font-weight: 300;
-  margin-left: 2px;
+  font-stretch: 100%;
+  margin-left: 7px;
+  letter-spacing: 0;
 }
 .transport,
 .bar-right {

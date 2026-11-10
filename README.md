@@ -1,6 +1,8 @@
-# SMPL-12
+# DG-48 Digger
 
 A pocket-style sampler and step sequencer that runs in the browser. Twelve pads, four groups, sixteen patterns, sampling from any tab or input, and a built-in sound library.
+
+**Try it:** [jhwoo582.github.io/DG-48](https://jhwoo582.github.io/DG-48/) (Chrome or Edge)
 
 The workflow is inspired by small hardware samplers such as the Teenage Engineering EP-133 K.O. II. This is an independent hobby project and is not affiliated with Teenage Engineering.
 

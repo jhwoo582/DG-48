@@ -18,7 +18,7 @@ export interface LibItem {
 
 type Tab = 'drums' | 'instruments' | 'freesound';
 
-export const LIB_DRAG_TYPE = 'application/x-smpl-sample';
+export const LIB_DRAG_TYPE = 'application/x-dg48-sample';
 
 const PACKS: Record<Exclude<Tab, 'freesound'>, { file: string; license: string }> = {
   drums: { file: 'tidal-drum-machines', license: 'license not stated' },
